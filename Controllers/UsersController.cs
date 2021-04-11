@@ -6,7 +6,7 @@ using globelinkapi.Helpers;
 using globelinkapi.Models;
 using globelinkapi.services;
 using Microsoft.AspNetCore.Mvc;
-
+using globelinkapi.Entities;
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace globelinkapi.Controllers
@@ -16,7 +16,6 @@ namespace globelinkapi.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
-
         public UsersController(IUserService userService)
         {
             _userService = userService;
@@ -33,12 +32,43 @@ namespace globelinkapi.Controllers
             return Ok(response);
         }
 
+        [HttpPost("insUser")]
+        public IActionResult insUser(UsersRequest model)
+        {
+            var user = HttpContext.Items["User"];
+            if (user == null)
+            {
+                return BadRequest(new { message = "unauthorize insert data" });
+            }
+            //model.createdBy = ((User)user).Id.ToString();
+            //String updatedBy = ((User)user).Id.ToString();
+            var response = _userService.insUser(model);
+            return Ok(response);
+        }
         [Authorize]
         [HttpGet]
         public IActionResult GetAll()
         {
+            var user = HttpContext.Items["User"];
+            if (user == null)
+            {
+                return BadRequest(new { message = "unauthorize retrive data" });
+            }
             var users = _userService.GetAll();
             return Ok(users);
+        }
+        [HttpPost("updUser")]
+        public IActionResult updUser(UsersRequest model)
+        {
+            var user = HttpContext.Items["User"];
+            if (user == null)
+            {
+                return BadRequest(new { message = "unauthorize insert data" });
+            }
+            //model.createdBy = ((User)user).Id.ToString();
+            //String updatedBy = ((User)user).Id.ToString();
+            var response = _userService.updUser(model);
+            return Ok(response);
         }
     }
 }

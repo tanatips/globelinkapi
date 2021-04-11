@@ -28,8 +28,6 @@ namespace globelinkapi
 
         public IConfiguration Configuration { get; }
 
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -40,17 +38,17 @@ namespace globelinkapi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "globelinkapi", Version = "v1" });
             });
 
-            services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(
-                                  builder =>
-                                  {
-                                      builder.WithOrigins("*")
-                                                          .AllowAnyHeader()
-                                                          .AllowAnyMethod();
-                                  });
-            });
-
+            //services.AddCors(options =>
+            //{
+            //    options.AddDefaultPolicy(
+            //                      builder =>
+            //                      {
+            //                          builder.WithOrigins("*")
+            //                                              .AllowAnyHeader()
+            //                                              .AllowAnyMethod();
+            //                      });
+            //});
+            services.AddCors();
             services.AddControllers();
 
             // configure strongly typed settings object
@@ -73,10 +71,16 @@ namespace globelinkapi
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseCors();
+            // app.UseCors();
             //app.UseAuthentication();
-            app.UseAuthorization();
-
+            // app.UseAuthorization();
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+            // custom jwt auth middleware
+            app.UseMiddleware<JwtMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

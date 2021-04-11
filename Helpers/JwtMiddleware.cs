@@ -25,7 +25,7 @@ namespace globelinkapi.Helpers
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
-            if (token != null)
+          if (token != null)
                 attachUserToContext(context, userService, token);
 
             await _next(context);

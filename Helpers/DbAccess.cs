@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Collections;
 namespace globelinkapi.Helpers
 {
     public class DbAccess
@@ -9,10 +10,12 @@ namespace globelinkapi.Helpers
         public  DbAccess()
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-            builder.DataSource = "139.5.147.55";
+            //builder.DataSource = "139.5.147.55";
+            builder.DataSource = "localhost";
+            //builder.DataSource = "192.168.1.104";
             builder.UserID = "sa";
             builder.Password = "reallyStrongPWD123";
-            builder.InitialCatalog = "globlink";
+            builder.InitialCatalog = "globelink";
             conn = new SqlConnection(builder.ConnectionString);
             try
             {
@@ -49,6 +52,23 @@ namespace globelinkapi.Helpers
                 Console.WriteLine(e.ToString());
             }
             return dt;
+        }
+        public bool ExecuteNonQuery(String sql,ArrayList parameters ){
+            int result = 0;
+            try {
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    foreach(SqlParameter para in parameters){
+                        cmd.Parameters.Add(para);
+                    }
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            return result>0? true:false;
         }
     }
 }
